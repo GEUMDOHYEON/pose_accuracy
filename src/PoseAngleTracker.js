@@ -10,6 +10,9 @@ function PoseAngleTracker() {
   const [angleHip, setAngleHip] = useState(null);
   const [kneeFeedback, setKneeFeedback] = useState("");
   const [hipFeedback, setHipFeedback] = useState("");
+  const squatCount = useRef(0);
+  const squatState = useRef("up"); // "up" or "down"
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     const pose = new Pose({
@@ -64,26 +67,60 @@ function PoseAngleTracker() {
           lineWidth: 2,
         });
       }
-
+      let ka = calculateAngle(hip, knee, ankle);
+      let ah = calculateAngle(shoulder, hip, knee);
       setAngleKnee(calculateAngle(hip, knee, ankle));
       setAngleHip(calculateAngle(shoulder, hip, knee));
 
       // 무릎보다 발끝이 앞에 나간 경우
-      if (knee.x - ankle.x > 0.05) {
+      if (knee.x - ankle.x > 0.09) {
         setKneeFeedback("무릎이 발끝보다 나갔어요.");
       } else {
         setKneeFeedback("좋은 자세입니다.");
       }
 
       // 허리가 과도하게 숙여진 경우
-      if (angleHip < 130) {
-        setHipFeedback("허리를 너무 숙였습니다.");
-      } else if (angleHip < 160) {
-        setHipFeedback("상체를 조금만 세워야합니다.");
+      if (ah > 75) {
+        setHipFeedback("상체가 너무 숙여졌어요");
+      } else if (ah < 40) {
+        setHipFeedback("상체가 너무 세워졌어요");
       } else {
-        setHipFeedback("좋은 자세입니다.");
+        setHipFeedback("좋은 자세");
       }
 
+      // var hipAngle = 180 - angleHip;
+      // if (hipAngle < 100) {
+      //   setHipFeedback("허리가 너무 숙여졌어요. 상체를 조금 더 세워보세요.");
+      // } else if (hipAngle > 170) {
+      //   setHipFeedback(
+      //     "허리를 너무 세웠어요. 엉덩이를 뒤로 빼고 상체를 약간 숙이세요."
+      //   );
+      // } else {
+      //   setHipFeedback("좋은 자세예요! 지금처럼 유지하세요.");
+      // }
+
+      // if (angleHip < 130) {
+      //   setHipFeedback("허리를 너무 숙였습니다.");
+      // } else if (angleHip < 160) {
+      //   setHipFeedback("상체를 조금만 세워야합니다.");
+      // } else {
+      //   setHipFeedback("좋은 자세입니다.");
+      // }
+
+      // 로그 추가로 실시간 angle 확인
+      // console.log("현재 무릎 각도:", ka);
+      // console.log("현재 상태:", squatState.current);
+
+      if (ka < 100 && squatState.current === "up") {
+        console.log("앉았어요");
+        squatState.current = "down";
+      }
+      if (ka > 160 && squatState.current === "down") {
+        console.log("일어났어요");
+        squatCount.current += 1;
+        setCount(squatCount.current);
+        squatState.current = "up";
+      }
       canvasCtx.restore();
     });
 
@@ -107,6 +144,7 @@ function PoseAngleTracker() {
       <h1>
         무릎 : {kneeFeedback}, 허리 : {hipFeedback}
       </h1>
+      <h1>{count}개</h1>
     </div>
   );
 }

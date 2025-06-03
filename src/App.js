@@ -1,5 +1,10 @@
 import "./App.css";
 import PoseAngleTracker from "./PoseAngleTracker";
+import PoseKnnChecker from "./PoseKnnChecker";
+import PoseRecorder from "./PoseRecoder";
+import TensorKnn from "./TensorKnn";
+import PoseKnnCounter from "./PoseKnnCounter";
+import SquatCounter from "./SqautCounter";
 // import * as pose from "@mediapipe/pose";
 // import smoothLandmarks from "mediapipe-pose-smooth"; // ES6
 // import * as cam from "@mediapipe/camera_utils";
@@ -9,7 +14,12 @@ import PoseAngleTracker from "./PoseAngleTracker";
 function App() {
   return (
     <>
-      <PoseAngleTracker />
+      {/* <PoseAngleTracker /> */}
+      {/* <PoseRecorder /> */}
+      {/* <PoseKnnChecker /> */}
+      {/* <TensorKnn /> */}
+      {/* <PoseKnnCounter /> */}
+      <SquatCounter />
     </>
   );
 }
